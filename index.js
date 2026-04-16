@@ -1,5 +1,5 @@
 const express = require("express");
-const { default: makeWASocket, DisconnectReason, useMultiFileAuthState } = require("@whiskeysockets/baileys");
+const { default: makeWASocket, DisconnectReason, useMultiFileAuthState, Browsers } = require("@whiskeysockets/baileys");
 const { Boom } = require("@hapi/boom");
 const qrcode = require("qrcode");
 const fs = require("fs");
@@ -22,7 +22,7 @@ async function connect() {
   if (!fs.existsSync(SESSION_DIR)) fs.mkdirSync(SESSION_DIR);
   const { state, saveCreds } = await useMultiFileAuthState(SESSION_DIR);
 
-  sock = makeWASocket({ auth: state, logger, printQRInTerminal: false });
+  sock = makeWASocket({ auth: state, logger, browser: Browsers.ubuntu("Chrome"), printQRInTerminal: false });
   sock.ev.on("creds.update", saveCreds);
 
   sock.ev.on("connection.update", async ({ connection, lastDisconnect, qr }) => {
