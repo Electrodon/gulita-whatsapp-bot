@@ -34,15 +34,13 @@ async function connect() {
 
     if (connection === "close") {
       isConnected = false;
-      const code = (lastDisconnect?.error instanceof Boom)
-        ? lastDisconnect.error.output.statusCode
-        : 0;
+      const err = lastDisconnect?.error;
+      const code = (err instanceof Boom) ? err.output.statusCode : 0;
+      console.log(`Desconectado. Código: ${code}. Error: ${err?.message || "sin error"}`);
 
       if (code === DisconnectReason.loggedOut) {
-        console.log("Sesión cerrada. Borrando sesión y reconectando...");
+        console.log("Sesión cerrada. Borrando sesión...");
         fs.rmSync(SESSION_DIR, { recursive: true, force: true });
-      } else {
-        console.log("Desconectado, reconectando...");
       }
       setTimeout(connect, 3000);
     }
